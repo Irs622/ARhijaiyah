@@ -1,0 +1,29 @@
+{
+  "name": "ar-hijaiyah",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Persistent Multi-Marker WebAR for Hijaiyah Learning",
+  "type": "module",
+  "scripts": {
+    "dev":       "vite",
+    "build":     "tsc --noEmit && vite build",
+    "preview":   "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "mind-ar": "^1.2.5",
+    "three":   "^0.165.0"
+  },
+  "devDependencies": {
+    "@types/three":    "^0.165.0",
+    "typescript":      "^5.4.5",
+    "vite":            "^5.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "browserslist": [
+    "Chrome >= 80",
+    "Android >= 80"
+  ]
+}
