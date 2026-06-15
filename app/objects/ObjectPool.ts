@@ -29,7 +29,7 @@ export class ObjectPool {
   }
 
   private loadLetter(letter: HijaiyahLetter): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.loader.load(
         `${MODEL_BASE_PATH}${letter.modelFile}`,
         (gltf) => {
@@ -43,9 +43,9 @@ export class ObjectPool {
           resolve();
         },
         undefined,
-        (err) => {
-          logger.error(`[ObjectPool] Failed to load ${letter.modelFile}:`, err);
-          reject(err);
+        (_err) => {
+          logger.warn(`[ObjectPool] Skipped missing model for ${letter.name}: ${letter.modelFile}`);
+          resolve();
         },
       );
     });

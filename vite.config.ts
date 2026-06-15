@@ -1,10 +1,14 @@
 import { defineConfig } from 'vite';
 import path from 'path';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  root: 'public',         // index.html lives in /public
-  publicDir: '../assets', // serve /assets at root
+  plugins: [
+    basicSsl()
+  ],
+  // root defaults to project directory — index.html lives here
+  publicDir: 'public', // static files (manifest.json, assets/) served at /
 
   resolve: {
     alias: {
@@ -14,17 +18,17 @@ export default defineConfig({
 
   server: {
     port: 5173,
-    host: true,  // expose on LAN — needed to test on a physical Android device
-    https: true, // WebXR/camera APIs require HTTPS even on dev
+    host: true,   // expose on LAN
+    https: true,  // Use basicSsl for HTTPS on LAN
   },
 
   build: {
-    outDir: '../dist',
+    outDir: 'dist',
     emptyOutDir: true,
     target: 'es2020', // Android Chrome 80+ support
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, 'public/index.html'),
+        main: path.resolve(__dirname, 'index.html'),
       },
       output: {
         // Split vendor chunks for better caching

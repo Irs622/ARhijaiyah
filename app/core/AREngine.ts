@@ -36,7 +36,7 @@ export class AREngine {
       // uiLoading: 'no', // Hide MindAR default UI — we use our own HUD
     });
 
-    const { renderer, scene, camera } = this.mindar;
+    const { renderer, camera } = this.mindar;
 
     // Inject MindAR's renderer/scene into our wrappers
     this.renderer = new Renderer(renderer.domElement);

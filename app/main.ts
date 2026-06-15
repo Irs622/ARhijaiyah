@@ -42,7 +42,7 @@ async function bootstrap(): Promise<void> {
   const arEngine   = new AREngine({
     container,
     imageTargetSrc: '/assets/markers/hijaiyah.mind',
-    maxTrack: 1, // Phase 1–2: track one marker at a time
+    maxTrack: 2, // Phase 1: track Alif and Ba simultaneously
   });
 
   const objectPool         = new ObjectPool();

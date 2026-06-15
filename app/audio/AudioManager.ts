@@ -34,6 +34,10 @@ export class AudioManager {
 
     try {
       const res = await fetch(`${AUDIO_BASE_PATH}${filename}`);
+      if (!res.ok) {
+        logger.warn(`[AudioManager] Skipped missing audio: ${filename}`);
+        return;
+      }
       const arrayBuffer = await res.arrayBuffer();
       const audioBuffer = await this.context.decodeAudioData(arrayBuffer);
       this.buffers.set(filename, audioBuffer);
