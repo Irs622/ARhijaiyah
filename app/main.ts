@@ -82,13 +82,15 @@ async function bootstrap(): Promise<void> {
 
     // After entrance animation, freeze into persistent canvas
     setTimeout(() => {
+      // Transition live object to persistent state to reset pose and stop animation
+      hijaiyahObj.toPersistentMaterial();
+
       const snapshot = new LetterSnapshot(
         letter,
         anchor.worldMatrix, // ← world-space, not camera-relative
         hijaiyahObj.root.clone(),
       );
 
-      hijaiyahObj.toPersistentMaterial();
       persistentCanvas.addLetterSnapshot(snapshot);
       wordComposer.accumulate(letter);
     }, 800); // wait for entrance animation to complete

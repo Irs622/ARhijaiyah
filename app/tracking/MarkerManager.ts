@@ -16,12 +16,12 @@ export class MarkerManager {
   /** Register all 28 letter markers with MindAR */
   registerAll(): void {
     for (const letter of HIJAIYAH_LETTERS) {
-      const group = this.arEngine.addAnchor(letter.markerIndex);
-      const anchor = new MarkerAnchor(letter.markerIndex, letter, group);
+      const mindarAnchor = this.arEngine.addAnchor(letter.markerIndex);
+      const anchor = new MarkerAnchor(letter.markerIndex, letter, mindarAnchor.group);
 
       // MindAR fires these callbacks when the target enters/leaves camera view
-      group.addEventListener('targetFound', () => this.onFound(anchor));
-      group.addEventListener('targetLost',  () => this.onLost(anchor));
+      mindarAnchor.onTargetFound = () => this.onFound(anchor);
+      mindarAnchor.onTargetLost = () => this.onLost(anchor);
 
       this.anchors.push(anchor);
       logger.debug(`[MarkerManager] Registered anchor ${letter.markerIndex} (${letter.name})`);

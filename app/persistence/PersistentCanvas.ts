@@ -22,6 +22,14 @@ export class PersistentCanvas {
   private scene = new THREE.Scene();
   private snapshots: LetterSnapshot[] = [];
 
+  constructor() {
+    // Setup lights for the persistent composite scene
+    const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    dirLight.position.set(2, 4, 2);
+    this.scene.add(ambient, dirLight);
+  }
+
   /** Called by MarkerManager subscriber when a new letter is detected */
   addLetterSnapshot(snapshot: LetterSnapshot): void {
     // Prevent duplicate — same letter index already in canvas

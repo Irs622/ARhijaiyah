@@ -17,10 +17,18 @@ export class HijaiyahObject {
   private idleClip?: THREE.AnimationClip;
   private successClip?: THREE.AnimationClip;
 
+  private basePosition = new THREE.Vector3();
+  private baseRotation = new THREE.Euler();
+  private elapsed = 0;
+
   constructor(letter: HijaiyahLetter, gltfScene: THREE.Group, clips: THREE.AnimationClip[]) {
     this.letter = letter;
     this.root = gltfScene;
     this.mixer = new THREE.AnimationMixer(this.root);
+
+    // Save base centered pose (position and rotation)
+    this.basePosition.copy(this.root.position);
+    this.baseRotation.copy(this.root.rotation);
 
     // Map clips by name convention: 'entrance', 'idle', 'success'
     this.entranceClip = clips.find((c) => c.name === 'entrance');
@@ -55,17 +63,26 @@ export class HijaiyahObject {
   /** Called every frame tick with delta time (seconds) */
   update(delta: number): void {
     this.mixer?.update(delta);
+
+    // Dynamic floating and swaying for active/live AR markers
+    if (this.currentState !== 'persistent') {
+      this.elapsed += delta;
+
+      // Bobbing (floating) up and down along the Z-axis (pointing out of the card)
+      this.root.position.z = this.basePosition.z + Math.sin(this.elapsed * 2.5) * 0.015;
+
+      // Swaying left and right to reveal side-shading profiles
+      this.root.rotation.y = this.baseRotation.y + Math.sin(this.elapsed * 1.5) * 0.1;
+    }
   }
 
-  /** Swap to a flat, unlit material for the persistent scene (perf optimisation) */
+  /** Keep original shiny material and reset pose for static persistent rendering */
   toPersistentMaterial(): void {
-    this.root.traverse((child) => {
-      if (child instanceof THREE.Mesh && child.material) {
-        const color = (child.material as THREE.MeshStandardMaterial).color ?? new THREE.Color(0xffffff);
-        child.material = new THREE.MeshBasicMaterial({ color });
-      }
-    });
     this.currentState = 'persistent';
+    
+    // Reset to base centered position and orientation
+    this.root.position.copy(this.basePosition);
+    this.root.rotation.copy(this.baseRotation);
   }
 
   getState(): AnimationState {

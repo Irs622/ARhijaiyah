@@ -18,7 +18,7 @@ export class PronunciationPlayer {
   /** Preload all letter + word audio files at startup */
   async preload(): Promise<void> {
     const letterFiles = HIJAIYAH_LETTERS.map((l) => l.audioFile);
-    const wordFiles   = TARGET_WORDS.map((w) => w.audioFile);
+    const wordFiles   = TARGET_WORDS.map((w) => w.audioFile).filter((f): f is string => !!f);
     await this.audio.loadAll([...letterFiles, ...wordFiles]);
     logger.info('[PronunciationPlayer] All audio preloaded');
   }
@@ -32,7 +32,9 @@ export class PronunciationPlayer {
     // Play word audio when a word is composed
     eventBus.on<TargetWord>('word:composed', (word) => {
       // Short delay — let the success animation start first
-      setTimeout(() => this.playWord(word.audioFile), 400);
+      if (word.audioFile) {
+        setTimeout(() => this.playWord(word.audioFile!), 400);
+      }
     });
   }
 

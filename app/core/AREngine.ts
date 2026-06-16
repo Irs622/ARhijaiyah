@@ -7,7 +7,7 @@
 // and scene control to our own Renderer and SceneManager.
 // ============================================================
 
-import { MindARThree } from 'mind-ar/dist/mindar-image-three.prod.js';
+import { MindARThree, MindAnchor } from 'mind-ar/dist/mindar-image-three.prod.js';
 import * as THREE from 'three';
 import { SceneManager } from './SceneManager';
 import { Renderer } from './Renderer';
@@ -44,6 +44,12 @@ export class AREngine {
 
     // MindAR manages its own camera — sync projection matrix
     this.sceneManager.camera.projectionMatrix.copy(camera.projectionMatrix);
+
+    // Setup lights for the live AR scene so 3D objects are illuminated
+    const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    dirLight.position.set(2, 4, 2);
+    this.mindar.scene.add(ambient, dirLight);
 
     logger.info('[AREngine] Initialized');
   }
@@ -93,12 +99,12 @@ export class AREngine {
   }
 
   /** Expose MindAR anchors for MarkerManager to attach callbacks */
-  getAnchors(): THREE.Group[] {
+  getAnchors(): MindAnchor[] {
     return this.mindar.anchors ?? [];
   }
 
   /** Expose MindAR addAnchor — used by MarkerManager */
-  addAnchor(targetIndex: number): THREE.Group {
+  addAnchor(targetIndex: number): MindAnchor {
     return this.mindar.addAnchor(targetIndex);
   }
 }
