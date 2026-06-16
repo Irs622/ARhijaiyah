@@ -7,21 +7,28 @@ import { logger } from '../utils/logger';
 const AUDIO_BASE_PATH = '/assets/audio/';
 
 export class AudioManager {
-  private context: AudioContext | null = null;
+  private context: AudioContext;
   private buffers = new Map<string, AudioBuffer>();
-  private gainNode: GainNode | null = null;
+  private gainNode: GainNode;
 
-  /**
-   * Must be called from a user gesture (e.g. tap) to unlock AudioContext
-   * on mobile browsers (iOS/Android restriction).
-   */
-  unlock(): void {
-    if (this.context) return;
+  constructor() {
     this.context = new AudioContext();
     this.gainNode = this.context.createGain();
     this.gainNode.connect(this.context.destination);
     this.gainNode.gain.value = 1.0;
-    logger.info('[AudioManager] AudioContext unlocked');
+  }
+
+  /**
+   * Resume the suspended AudioContext on first user interaction.
+   */
+  unlock(): void {
+    if (this.context && this.context.state === 'suspended') {
+      this.context.resume().then(() => {
+        logger.info('[AudioManager] AudioContext resumed/unlocked');
+      }).catch((err) => {
+        logger.error('[AudioManager] Failed to resume AudioContext:', err);
+      });
+    }
   }
 
   /** Preload a single audio file into the buffer pool */
