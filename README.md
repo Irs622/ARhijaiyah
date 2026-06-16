@@ -109,6 +109,67 @@ Browser modern membatasi akses kamera (`getUserMedia`) hanya pada **Secure Conte
 1. Buka aplikasi di HP melalui link HTTPS di atas.
 2. Izinkan akses **Kamera** dan **Mikrofon** saat diminta browser.
 3. Arahkan kamera HP ke gambar marker huruf Hijaiyah (misalnya marker **Alif**).
-4. Model 3D huruf Alif akan muncul di atas marker, disertai suara pelafalan *"Alif"*.
-5. Pindahkan marker/kamera Anda. Model 3D huruf Alif akan tetap membeku di posisi terakhir (Persisten).
-6. Ucapkan pelafalan huruf ke mikrofon untuk melatih kelancaran pengucapan Anda!
+4. Model 3D huruf Alif (atau huruf lainnya) yang **penuh warna, mengilap, melayang, dan bergoyang secara 3D** akan muncul di atas marker, disertai suara pelafalan huruf tersebut.
+5. Pindahkan marker/kamera Anda. Model 3D huruf tersebut akan tetap membeku di posisi terakhir (Persisten).
+6. Susun huruf-huruf tersebut secara berturut-turut dari **kanan-ke-kiri** untuk membentuk kosakata Arab (lihat daftar kata di bawah).
+7. Setelah kata terbentuk secara valid:
+   - Sistem akan memicu animasi sukses dan suara pelafalan kata utuh akan berbunyi.
+   - **Objek 3D representasi benda** (atau Bintang Emas 3D sebagai fallback sementara) akan muncul mengambang dan berputar secara dinamis di atas kumpulan huruf 3D tersebut!
+8. Ucapkan pelafalan kata/huruf ke mikrofon untuk mengevaluasi kelancaran lafal Anda secara interaktif.
+
+---
+
+## 📋 Daftar Kosakata yang Didukung (23 Kata)
+
+Aplikasi mendukung pendeteksian otomatis dan penyusunan 23 kosakata berikut:
+
+### 🟩 Tingkat 1 (2 Huruf)
+* **يد** (ي - د) ➔ **Tangan**
+* **أب** (ا - ب) ➔ **Ayah**
+* **أم** (ا - م) ➔ **Ibu**
+* **عم** (ع - m) ➔ **Paman**
+* **أخ** (ا - خ) ➔ **Saudara**
+* **دم** (د - م) ➔ **Darah**
+
+### 🟨 Tingkat 2 (3 Huruf)
+* **باب** (ب - ا - ب) ➔ **Pintu**
+* **كتب** (ك - ت - ب) ➔ **Buku**
+* **قلم** (ق - ل - م) ➔ **Pena**
+* **نور** (ن - و - ر) ➔ **Cahaya**
+* **بيت** (ب - ي - ت) ➔ **Rumah**
+* **عسل** (ع - س - ل) ➔ **Madu**
+* **سمك** (س - م - ك) ➔ **Ikan**
+* **قmr** (ق - م - ر) ➔ **Bulan**
+* **شمس** (ش - م - س) ➔ **Matahari**
+* **رجل** (ر - ج - ل) ➔ **Kaki**
+* **ولد** (و - ل - د) ➔ **Anak Laki-Laki**
+* **بنت** (ب - ن - ت) ➔ **Anak Perempuan**
+* **عين** (ع - ي - n) ➔ **Mata**
+
+### 🟥 Tingkat 3 (4 Huruf)
+* **فرس** (ف - ر - س) ➔ **Kuda**
+* **نهر** (ن - ه - ر) ➔ **Sungai**
+* **كلب** (ك - ل - ب) ➔ **Anjing**
+* **جبل** (ج - ب - ل) ➔ **Gunung**
+* **أرنب** (ا - ر - n - ب) ➔ **Kelinci**
+* **مسجد** (م - س - ج - د) ➔ **Masjid**
+* **تفاح** (ت - ف - ا - ح) ➔ **Apel**
+* **حليب** (ح - ل - ي - ب) ➔ **Susu**
+
+---
+
+## 📦 Mengimpor Model 3D Kustom untuk Benda
+
+Jika Anda ingin mengganti Bintang Emas 3D bawaan dengan model 3D benda asli (misalnya Pena, Rumah, atau Buku):
+1. Siapkan file 3D dalam format **`.glb`** bergaya kartun/mainan.
+2. Beri nama file sesuai dengan daftar registri kata (misal: `qalam.glb` untuk pena, `bait.glb` untuk rumah, `kitab.glb` untuk buku).
+3. Salin file tersebut ke dalam folder:  
+   📂 **`/public/assets/models/words/`**
+4. Aplikasi akan mendeteksinya secara otomatis saat kata tersebut berhasil disusun di AR canvas dan menampilkan model 3D benda kustom Anda tanpa perlu mengubah kode!
+
+---
+
+## 📄 Lisensi
+
+Proyek ini didistribusikan di bawah **Lisensi MIT**. Lihat file `LICENSE` untuk informasi lebih lanjut.
+
