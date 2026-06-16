@@ -3,7 +3,7 @@
 // ============================================================
 
 import { MarkerAnchor } from './MarkerAnchor';
-import { HIJAIYAH_LETTERS, getLetterByMarkerIndex } from '../data/hijaiyah.data';
+import { HIJAIYAH_LETTERS } from '../data/hijaiyah.data';
 import { eventBus } from '../core/EventBus';
 import type { AREngine } from '../core/AREngine';
 import { logger } from '../utils/logger';

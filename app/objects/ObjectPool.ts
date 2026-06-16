@@ -43,7 +43,7 @@ export class ObjectPool {
           resolve();
         },
         undefined,
-        (_err) => {
+        () => {
           logger.warn(`[ObjectPool] Skipped missing model for ${letter.name}: ${letter.modelFile}`);
           resolve();
         },

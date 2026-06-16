@@ -14,7 +14,7 @@
 import type { EvalResult } from '../data/types';
 
 export class PronunciationEvaluator {
-  private readonly PASS_THRESHOLD = 0.7; // 70% similarity required
+  private PASS_THRESHOLD = 0.7; // 70% similarity required
 
   /**
    * Evaluate a speech transcript against the target word.
@@ -72,6 +72,6 @@ export class PronunciationEvaluator {
 
   setPassThreshold(threshold: number): void {
     // Allow threshold to be adjusted for research study configurations
-    (this as { PASS_THRESHOLD: number }).PASS_THRESHOLD = Math.max(0, Math.min(1, threshold));
+    this.PASS_THRESHOLD = Math.max(0, Math.min(1, threshold));
   }
 }

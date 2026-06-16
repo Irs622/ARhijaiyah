@@ -19,7 +19,7 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,   // expose on LAN
-    https: true,  // Use basicSsl for HTTPS on LAN
+    allowedHosts: true, // Allow localtunnel hosts
   },
 
   build: {

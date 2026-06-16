@@ -54,9 +54,9 @@ async function bootstrap(): Promise<void> {
   const pronunciationPlayer = new PronunciationPlayer(audioManager);
 
   // UI — instantiated after DOM ready
-  const hudManager      = new HUDManager();
-  const wordStrip       = new WordStrip();
-  const feedbackOverlay = new FeedbackOverlay();
+  new HUDManager();
+  new WordStrip();
+  new FeedbackOverlay();
 
   // ── 3. Preload assets ─────────────────────────────────────
   logger.info('[main] Preloading assets…');

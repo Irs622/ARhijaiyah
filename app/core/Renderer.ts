@@ -18,7 +18,7 @@ export class Renderer {
 
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap at 2x for mobile perf
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.renderer.shadowMap.enabled = false; // Disabled for mobile perf
     this.renderer.autoClear = false;         // Critical: manual clear for dual-scene compositing
 
