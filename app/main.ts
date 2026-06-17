@@ -96,13 +96,7 @@ async function bootstrap(): Promise<void> {
     }, 800); // wait for entrance animation to complete
   });
 
-  // Plug persistent canvas into render loop
-  eventBus.on<{ delta: number }>('tick', () => {
-    persistentCanvas.render(
-      arEngine.getRenderer().getWebGLRenderer(),
-      arEngine.getSceneManager().camera,
-    );
-  });
+
 
   // ── 6. AudioContext unlock on first tap ───────────────────
   const unlockAudio = (): void => {

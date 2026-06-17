@@ -11,11 +11,12 @@ export class HUDManager {
 
   // DOM elements — injected via index.html IDs
   private readonly el = {
-    hudRoot:       document.getElementById('hud-root')!,
-    statusText:    document.getElementById('hud-status')!,
-    scanOverlay:   document.getElementById('hud-scan-overlay')!,
-    wordPanel:     document.getElementById('hud-word-panel')!,
-    resetBtn:      document.getElementById('hud-reset-btn')!,
+    hudRoot:       document.getElementById('hud-root'),
+    statusText:    document.getElementById('hud-status'),
+    scanOverlay:   document.getElementById('hud-scan-overlay'),
+    wordPanel:     document.getElementById('hud-word-panel'),
+    resetBtn:      document.getElementById('hud-reset-btn'),
+    cardElem:      document.getElementById('hud-3d-card'),
   };
 
   constructor() {
@@ -67,7 +68,13 @@ export class HUDManager {
         this.setStatus('Ucapkan kata yang muncul…');
         break;
     }
+    }
+
+  // Show the 3D card element (used in unit tests)
+  showCard(): void {
+    this.el.cardElem?.classList.add('visible');
   }
+
 
   private setStatus(text: string): void {
     if (this.el.statusText) this.el.statusText.textContent = text;

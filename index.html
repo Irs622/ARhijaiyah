@@ -247,6 +247,55 @@
       transition: opacity 0.15s ease;
     }
 
+    /* ── Floating 3D Card ─────────────────────── */
+    #hud-3d-card {
+      position: fixed;
+      top: 15%;
+      left: 50%;
+      transform: translate(-50%, -20px);
+      width: 90%;
+      max-width: 380px;
+      height: 38%;
+      max-height: 320px;
+      z-index: 12;
+      background: rgba(15, 15, 26, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(124, 92, 252, 0.25);
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #hud-3d-card.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, 0);
+    }
+
+    #interactive-3d-canvas-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .card-instruction {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(240, 240, 255, 0.6);
+      text-align: center;
+      padding-bottom: 12px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
     #feedback-overlay.overlay--success {
       background: rgba(34, 197, 94, 0.18);
       opacity: 1;
@@ -414,6 +463,12 @@
       <div id="word-strip"></div>
       <button id="hud-reset-btn" aria-label="Reset kata">↺ Ulangi</button>
     </div>
+  </div>
+
+  <!-- Floating 3D Card for Interactive Viewer -->
+  <div id="hud-3d-card">
+    <div id="interactive-3d-canvas-container"></div>
+    <div class="card-instruction">Sentuh & geser untuk memutar 3D! 👆</div>
   </div>
 
   <!-- Fullscreen feedback flash layer -->

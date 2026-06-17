@@ -8,17 +8,23 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run --coverage",
+    "test:ui": "vitest",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "mind-ar": "^1.2.5",
     "three": "0.149.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.0",
     "@types/three": "0.149.0",
     "@vitejs/plugin-basic-ssl": "1.2.0",
+    "rollup": "^4.62.0",
     "typescript": "^5.4.5",
-    "vite": "^5.3.1"
+    "vite": "^5.3.1",
+    "vitest": "^2.1.9"
   },
   "engines": {
     "node": "20.x"
