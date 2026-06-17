@@ -1,5 +1,5 @@
 // ============================================================
-// HUDManager.ts — HUD State Machine
+// HUDManager.ts — HUD State Machine (UI box removed)
 // ============================================================
 
 import { eventBus } from '../core/EventBus';
@@ -9,14 +9,13 @@ import type { HUDState } from '../data/types';
 export class HUDManager {
   private currentState: HUDState = 'idle';
 
-  // DOM elements — injected via index.html IDs
+  // DOM elements — injected via index.html IDs (no card element)
   private readonly el = {
     hudRoot:       document.getElementById('hud-root'),
     statusText:    document.getElementById('hud-status'),
     scanOverlay:   document.getElementById('hud-scan-overlay'),
     wordPanel:     document.getElementById('hud-word-panel'),
     resetBtn:      document.getElementById('hud-reset-btn'),
-    cardElem:      document.getElementById('hud-3d-card'),
   };
 
   constructor() {
@@ -68,13 +67,7 @@ export class HUDManager {
         this.setStatus('Ucapkan kata yang muncul…');
         break;
     }
-    }
-
-  // Show the 3D card element (used in unit tests)
-  showCard(): void {
-    this.el.cardElem?.classList.add('visible');
   }
-
 
   private setStatus(text: string): void {
     if (this.el.statusText) this.el.statusText.textContent = text;

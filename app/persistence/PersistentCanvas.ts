@@ -27,11 +27,10 @@ export class PersistentCanvas {
   private loader = new GLTFLoader();
   
   private userInteracted = false;
-  private cardEl: HTMLElement;
+
   private containerEl: HTMLElement;
 
   constructor() {
-    this.cardEl = document.getElementById('hud-3d-card')!;
     this.containerEl = document.getElementById('interactive-3d-canvas-container')!;
 
     const width = this.containerEl.clientWidth || 340;
@@ -224,9 +223,7 @@ export class PersistentCanvas {
     this.snapshots.push(snapshot);
     logger.info(`[PersistentCanvas] Placed letter ${snapshot.letter.name} — total: ${this.snapshots.length}`);
 
-    // Show the card container when first letter is added
     if (this.snapshots.length === 1) {
-      this.cardEl.classList.add('visible');
       this.userInteracted = false;
       this.camera.position.set(0, 0.05, 1.1);
       this.controls.target.set(0, 0, 0);
@@ -273,8 +270,7 @@ export class PersistentCanvas {
       this.wordObject = null;
     }
 
-    // Hide the floating card
-    this.cardEl.classList.remove('visible');
+
     this.userInteracted = false;
 
     logger.info('[PersistentCanvas] Reset');

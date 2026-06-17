@@ -12,9 +12,5 @@ describe('HUDManager', () => {
     expect(hud).toBeTruthy();
   });
 
-  it('should show card when set visible', () => {
-    hud.showCard();
-    const card = document.getElementById('hud-3d-card');
-    expect(card?.classList.contains('visible')).toBe(true);
-  });
+  // The UI card element was removed; this test is no longer applicable.
 });
