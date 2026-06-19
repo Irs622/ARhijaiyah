@@ -321,7 +321,7 @@ Aplikasi mendukung pendeteksian otomatis dan penyusunan 23 kosakata berikut:
 * **تفاح** (ت - ف - ا - ح) ➔ **Apel**
 * **حليب** (ح - ل - ي - ب) ➔ **Susu**
 
----
+----
 
 ## 📦 Mengimpor Model 3D Kustom untuk Benda
 
