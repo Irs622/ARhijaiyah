@@ -1,33 +1,43 @@
-# WebAR Hijaiyah — Persistent Multi-Marker WebAR for Hijaiyah Learning
+# WebAR Hijaiyah — Spawning 3D & Touch Interaction WebAR
 
 > **Stack**: Three.js (v0.149.0) · MindAR · TypeScript · Vite  
-> **Key Feature**: Persistent Multi-Marker Tracking
+> **Key Feature**: Interactive Multi-Model Spawning & Direct Touch Control  
 
 ---
 
 ## 🌟 Tentang Proyek
 
-Aplikasi pembelajaran Hijaiyah berbasis **WebAR (Web Augmented Reality)** yang interaktif dan dirancang khusus untuk mobile‑first (terutama Android Chrome). Berbeda dengan aplikasi AR konvensional yang menyembunyikan objek 3D ketika penanda (*marker*) keluar dari kamera, **WebAR Hijaiyah** mengimplementasikan mekanisme **Persistent Canvas** (kontribusi riset utama). Pengguna dapat menyusun rangkaian huruf Hijaiyah secara bertahap untuk membentuk kata, **tanpa** fitur pengenalan suara karena keputusan desain untuk tidak menggunakan Web Speech API.
+Aplikasi pembelajaran Hijaiyah berbasis **WebAR (Web Augmented Reality)** yang interaktif dan dirancang khusus untuk mobile-first (Android Chrome / iOS Safari). Saat penanda (*marker*) huruf Hijaiyah berhasil dipindai oleh kamera, aplikasi akan langsung memunculkan hingga **3 objek 3D berdampingan** dengan rotasi lurus (menghadap tegak lurus agar seluruh objek kelihatan jelas). 
+
+Pengguna dapat memberikan interaksi langsung (sentuh, geser, perbesar, perkecil) pada model 3D tersebut secara intuitif langsung di layar tanpa memerlukan UI atau tombol tambahan.
+
+---
 
 ## 🚀 Fitur Utama
 
-1. **Persistent AR Canvas (autoClear=false)**  
-   Huruf 3D yang sudah dipindai (*scanned*) akan tetap berada di layar (beku di posisi koordinat dunia terakhir) bahkan setelah marker fisik dipindahkan dari pandangan kamera.
-2. **Multi-Marker Tracking (28 Huruf)**  
-   Mendukung deteksi ke‑28 huruf Hijaiyah secara independen menggunakan satu buah bundel target `hijaiyah.mind` demi efisiensi performa pada perangkat mobile.
-3. **Penyusunan Kata & Validasi (Word Composition)**  
-   Mendeteksi runtutan huruf yang dipindai secara Right‑to‑Left (kanan‑ke‑kiri). Sistem memvalidasi secara real‑time apakah rangkaian huruf tersebut membentuk kosakata Arab yang valid (misal: "باب", "كتب").
-4. **Object Pool**  
-   Mengalokasikan instansiasi objek 3D GLTF di memori sejak awal startup demi mencegah lag (*garbage collection spikes*) pada perangkat mobile menengah.
+1. **Spawning 3 Objek Berdampingan**  
+   Ketika marker dipindai, 3 objek 3D akan langsung muncul di atas marker:
+   - **Objek Kiri**: Model 3D Huruf Hijaiyah (misalnya huruf `Ba`).
+   - **Objek Tengah**: Model 3D kata benda terkait (misalnya model Pintu untuk kata `Bab`). Jika huruf tidak memiliki kosakata terkait, objek tengah tidak dimunculkan.
+   - **Objek Kanan**: Bintang Emas 3D sebagai penanda prestasi.
 
-> **Catatan:** Fitur **Speech Recognition** yang pernah direncanakan telah dihilangkan sesuai keputusan proyek.
+2. **Rotasi Lurus (Clear Visibility)**  
+   Model muncul dengan rotasi lurus `(0, 0, 0)` dan tanpa swaying/bobbing otomatis agar seluruh permukaan objek terlihat jelas dan mudah dipahami oleh anak-anak.
 
-## 🛠️ Teknologi yang Digunakan
+3. **Interaksi Layar Sentuh Langsung (Direct Gestures)**  
+   - **Geser (Drag)**: Menyeret objek menggunakan satu jari. Perpindahan dibatasi pada permukaan 2D kartu penanda agar objek tetap stabil dan tidak melayang tak terkendali.
+   - **Pinch-to-Scale**: Mencubit layar dengan dua jari untuk memperbesar atau memperkecil ukuran model 3D secara bebas.
+   - **Mouse Wheel (Desktop Dev Mode)**: Mendukung scroll wheel mouse untuk mempermudah developer melakukan pengujian ukuran model di PC/Laptop.
 
-- **Three.js (v0.149.0)**: Pustaka grafis 3D WebGL.
-- **MindAR**: Library pelacakan gambar (*Image Tracking*) berbasis web berkinerja tinggi.
-- **Vite**: Build tool modern untuk frontend yang super cepat.
-- **TypeScript**: Menjamin keamanan tipe data (*type‑safety*) di seluruh modul arsitektur.
+4. **Umpan Balik Suara (Tap Audio)**  
+   - Mengetuk model **Huruf** akan memutar suara pelafalan huruf Hijaiyah tersebut (misalnya "Ba").
+   - Mengetuk model **Benda** akan memutar suara pelafalan kata Arab benda tersebut (misalnya "Pintu").
+   - Mengetuk model **Bintang** akan memainkan dentingan keberhasilan (*success chime*) yang disintesis langsung menggunakan Web Audio API.
+
+5. **Kinerja Tinggi (Object Pool)**  
+   Instansiasi model 3D huruf di-preload sejak awal startup untuk mencegah terjadinya lag akibat garbage collection spike saat pelacakan AR berjalan.
+
+---
 
 ## 📁 Struktur Folder Proyek
 
@@ -35,20 +45,19 @@ Aplikasi pembelajaran Hijaiyah berbasis **WebAR (Web Augmented Reality)** yang i
 ar-hijaiyah/
 │
 ├── app/
-│   ├── core/                  # Inisialisasi MindAR, renderer, kamera & EventBus
+│   ├── core/                  # MindAR engine, renderer, ARInteractionManager & EventBus
 │   ├── tracking/              # Pengelola jangkar (anchors) dan event pelacakan
-│   ├── persistence/           # Mekanisme rendering persisten & komposisi kata (Riset Utama)
-│   ├── objects/               # Model 3D Hijaiyah (GLTF) & manajemen animasi
-│   ├── ui/                    # HUD Overlay, WordStrip RTL, & efek getaran (haptics)
-│   ├── audio/                 # Web Audio API & pemutar pelafalan audio (.mp3)
+│   ├── persistence/           # Mekanisme rendering persisten & komposisi kata
+│   ├── objects/               # Model 3D Hijaiyah (GLTF) & penanganan animasi
+│   ├── ui/                    # HUD Overlay & WordStrip RTL
+│   ├── audio/                 # Web Audio API, AudioManager, & Pemutar pelafalan
 │   ├── data/                  # Registri data huruf & kosa kata Arab
-│   ├── utils/                 # Logger dan utilitas matematika/perangkat
+│   ├── utils/                 # Logger dan utilitas perangkat
 │   └── main.ts                # Entry point aplikasi
 │
-├── docs/                      # Dokumen proposal, riset gap, dan arsitektur
-├── public/                    # File static (index.html)
+├── public/                    # File static
 │   └── assets/
-│       ├── markers/           # File kompilasi MindAR (hijaiyah.mind)
+│       ├── markers/           # File kompilasi target MindAR (hijaiyah.mind)
 │       ├── models/            # Model 3D huruf (alif.glb, dll.)
 │       └── audio/             # File pelafalan audio (.mp3)
 │
@@ -62,279 +71,78 @@ ar-hijaiyah/
 ## ⚙️ Panduan Instalasi & Menjalankan Lokal
 
 ### Prerequisites
-* Pastikan Anda sudah menginstal **Node.js** (versi 20.x) pada laptop Anda.
+* Pastikan Anda sudah menginstal **Node.js** (versi 20.x atau terbaru) pada komputer Anda.
 
-### 1. Kloning dan Install Dependensi
+### 1. Install Dependensi
 ```bash
 # Masuk ke direktori proyek
 cd ar-hijaiyah
 
-# Install dependensi (stubs digunakan untuk menghindari native build pada canvas)
-npm install --omit=optional --ignore-scripts
-```
-
-### 2. Menjalankan Server Pengembangan (Dev Server)
-```bash
-npm run dev
-```
-Secara default, Vite akan berjalan di port `5173`.
-
-### 3. Akses via Handphone (Membutuhkan HTTPS)
-Browser modern membatasi akses kamera (`getUserMedia`) hanya pada **Secure Context (HTTPS)** atau `localhost`. Untuk menguji pada HP Android, gunakan tunneling aman seperti `localhost.run` atau `localtunnel`:
-
-* **Opsi A: localhost.run (Direkomendasikan & Stabil)**
-```bash
-ssh -o StrictHostKeyChecking=no -R 80:localhost:5173 nokey@localhost.run
-```
-Buka link HTTPS yang diberikan di terminal pada browser Google Chrome HP Anda.
-
-* **Opsi B: Localtunnel**
-```bash
-npx localtunnel --port 5173
-```
-Buka link `.loca.lt` HTTPS yang muncul.
-
----
-
-## 📖 Cara Penggunaan & Pengujian
-
-1. Buka aplikasi di HP melalui link HTTPS di atas.
-2. Izinkan akses **Kamera** saat diminta browser.
-3. Arahkan kamera HP ke gambar marker huruf Hijaiyah (misalnya marker **Alif**).
-4. Model 3D huruf Alif (atau huruf lainnya) yang **penuh warna, mengilap, melayang, dan bergoyang secara 3D** akan muncul di atas marker, disertai suara pelafalan huruf tersebut.
-5. Pindahkan marker/kamera Anda. Model 3D huruf tersebut akan tetap membeku di posisi terakhir (Persisten).
-6. Susun huruf‑huruf tersebut secara berturut‑turut dari **kanan‑ke‑kiri** untuk membentuk kosakata Arab (lihat daftar kata di bawah).
-7. Setelah kata terbentuk secara valid:
-   - Sistem akan memicu animasi sukses dan suara pelafalan kata utuh akan berbunyi.
-   - **Objek 3D representasi benda** (atau Bintang Emas 3D sebagai fallback sementara) akan muncul mengambang dan berputar secara dinamis di atas kumpulan huruf 3D tersebut!
-
----
-
-## 📋 Daftar Kosakata yang Didukung (23 Kata)
-
-Aplikasi mendukung pendeteksian otomatis dan penyusunan 23 kosakata berikut:
-
-### 🟩 Tingkat 1 (2 Huruf)
-* **يد** (ي - د) → Tangan
-* **أب** (ا - ب) → Ayah
-* **أم** (ا - م) → Ibu
-* **عم** (ع - م) → Paman
-* **أخ** (ا - خ) → Saudara
-* **دم** (د - م) → Darah
-
-### 🟨 Tingkat 2 (3 Huruf)
-* **باب** (ب - ا - ب) → Pintu
-* **كتب** (ك - ت - ب) → Buku
-* **قلم** (ق - ل - م) → Pena
-* **نور** (ن - و - ر) → Cahaya
-* **بيت** (ب - ي - ت) → Rumah
-* **عسل** (ع - س - ل) → Madu
-* **سمك** (س - م - ك) → Ikan
-* **قمر** (ق - م - ر) → Bulan
-* **شمس** (ش - م - س) → Matahari
-* **رجل** (ر - ج - ل) → Kaki
-* **ولد** (و - ل - د) → Anak Laki‑Laki
-* **بنت** (ب - ن - ت) → Anak Perempuan
-* **عين** (ع - ي - ن) → Mata
-
-### 🟥 Tingkat 3 (4 Huruf)
-* **فرس** (ف - ر - س) → Kuda
-* **نهر** (ن - ه - ر) → Sungai
-* **كلب** (ك - ل - ب) → Anjing
-* **جبل** (ج - ب - ل) → Gunung
-* **أرنب** (ا - ر - ن - ب) → Kelinci
-* **مسجد** (م - س - ج - د) → Masjid
-* **تفاح** (ت - ف - ا - ح) → Apel
-* **حليب** (ح - ل - ي - ب) → Susu
-
----
-
-## 📦 Mengimpor Model 3D Kustom untuk Benda
-
-Jika Anda ingin mengganti Bintang Emas 3D bawaan dengan model 3D benda asli (misalnya Pena, Rumah, atau Buku):
-1. Siapkan file 3D dalam format **`.glb`** bergaya kartun/mainan.
-2. Beri nama file sesuai dengan daftar registri kata (misal: `qalam.glb` untuk pena, `bait.glb` untuk rumah, `kitab.glb` untuk buku).
-3. Salin file tersebut ke dalam folder:
-   📂 **`/public/assets/models/words/`**
-4. Aplikasi akan mendeteksinya secara otomatis saat kata tersebut berhasil disusun di AR canvas dan menampilkan model 3D benda kustom Anda tanpa perlu mengubah kode!
-
----
-
-## 📄 Lisensi
-
-Proyek ini didistribusikan di bawah **Lisensi MIT**. Lihat file `LICENSE` untuk informasi lebih lanjut.
-
-
-> **Stack**: Three.js (v0.149.0) · MindAR · TypeScript · Vite  
-> **Key Feature**: Persistent Multi-Marker Tracking & Speech Pronunciation Feedback
-
----
-
-## 🌟 Tentang Proyek
-
-Aplikasi pembelajaran Hijaiyah berbasis **WebAR (Web Augmented Reality)** yang interaktif dan dirancang khusus untuk mobile-first (terutama Android Chrome). Berbeda dengan aplikasi AR konvensional yang menyembunyikan objek 3D ketika penanda (*marker*) keluar dari kamera, **WebAR Hijaiyah** mengimplementasikan mekanisme **Persistent Canvas** (kontribusi riset utama). Pengguna dapat menyusun rangkaian huruf Hijaiyah secara bertahap untuk membentuk kata, mendengarkan pelafalan audio, dan mendapatkan umpan balik pengucapan berbasis suara secara interaktif.
-
-## 🚀 Fitur Utama
-
-1. **Persistent AR Canvas (autoClear=false)**
-   Huruf 3D yang sudah dipindai (*scanned*) akan tetap berada di layar (beku di posisi koordinat dunia terakhir) bahkan setelah marker fisik dipindahkan dari pandangan kamera.
-2. **Multi-Marker Tracking (28 Huruf)**
-   Mendukung deteksi ke-28 huruf Hijaiyah secara independen menggunakan satu buah bundel target compiler `hijaiyah.mind` demi efisiensi performa pada perangkat mobile.
-3. **Penyusunan Kata & Validasi (Word Composition)**
-   Mendeteksi runtutan huruf yang dipindai secara Right-to-Left (kanan-ke-kiri). Sistem akan memvalidasi secara real-time apakah rangkaian huruf tersebut membentuk kosa kata bahasa Arab yang valid (misal: "باب", "كتب").
-4. **Evaluasi Pengucapan Suara (Web Speech API ASR)**
-   Mengevaluasi pelafalan suara pengguna secara langsung menggunakan mikrofon HP dengan algoritma pencocokan fonetik untuk menentukan kelulusan lafal.
-5. **Aset Berkinerja Tinggi (Object Pool)**
-   Mengalokasikan instansiasi objek 3D GLTF di memori sejak awal startup demi mencegah terjadinya lag (*garbage collection spikes*) di perangkat mobile berspesifikasi menengah.
-
----
-
-## 🛠️ Teknologi yang Digunakan
-
-* **Three.js (v0.149.0)**: Pustaka grafis 3D WebGL.
-* **MindAR**: Library pelacakan gambar (*Image Tracking*) berbasis web berkinerja tinggi.
-* **Vite**: Build tool modern untuk frontend yang super cepat.
-* **TypeScript**: Menjamin keamanan tipe data (*type-safety*) di seluruh modul arsitektur.
-* **Web Speech API**: Pengenalan ucapan (*Automatic Speech Recognition*) langsung di browser tanpa server tambahan.
-
----
-
-## 📁 Struktur Folder Proyek
-
-```text
-ar-hijaiyah/
-│
-├── app/
-│   ├── core/                  # Inisialisasi MindAR, renderer, kamera, & EventBus
-│   ├── tracking/              # Pengelola jangkar (anchors) dan event pelacakan
-│   ├── persistence/           # Mekanisme rendering persisten & komposisi kata (Riset Utama)
-│   ├── objects/               # Model 3D Hijaiyah (GLTF) & manajemen animasi
-│   ├── ui/                    # HUD Overlay, WordStrip RTL, & efek getaran (haptics)
-│   ├── audio/                 # Web Audio API & pemutar pelafalan audio (.mp3)
-│   ├── speech/                # Kontroler ASR & Evaluator kemiripan pelafalan
-│   ├── data/                  # Registri data huruf & kosa kata Arab
-│   ├── utils/                 # Logger dan utilitas matematika/perangkat
-│   └── main.ts                # Entry point aplikasi
-│
-├── docs/                      # Dokumen proposal, riset gap, dan arsitektur
-├── public/                    # File static (index.html)
-│   └── assets/
-│       ├── markers/           # File kompilasi MindAR (hijaiyah.mind)
-│       ├── models/            # Model 3D huruf (alif.glb, dll.)
-│       └── audio/             # File pelafalan audio (.mp3)
-│
-├── vite.config.ts             # Konfigurasi server & build Vite
-├── tsconfig.json              # Konfigurasi compiler TypeScript
-└── package.json               # Dependensi & script proyek
-```
-
----
-
-## ⚙️ Panduan Instalasi & Menjalankan Lokal
-
-### Prerequisites
-* Pastikan Anda sudah menginstal **Node.js** di laptop Anda.
-
-### 1. Kloning dan Install Dependensi
-```bash
-# Masuk ke direktori proyek
-cd ar-hijaiyah
-
-# Install dependensi yang dibutuhkan
+# Install dependensi proyek
 npm install
 ```
 
-### 2. Menjalankan Server Pengembangan (Dev Server)
+### 2. Menjalankan Server Pengembangan
 ```bash
 npm run dev
 ```
 Secara default, Vite akan berjalan di port `5173`.
 
 ### 3. Akses via Handphone (Membutuhkan HTTPS)
-Browser modern membatasi akses kamera (`getUserMedia`) hanya pada **Secure Context (HTTPS)** atau `localhost`. Agar bisa mengetesnya langsung di HP menggunakan kamera fisik, gunakan alternatif terowongan (tunneling) aman seperti `localhost.run` atau `localtunnel`:
-
-* **Opsi A: Menggunakan localhost.run (Direkomendasikan & Stabil)**
-  Jalankan perintah ini di terminal baru Anda:
-  ```bash
-  ssh -o StrictHostKeyChecking=no -R 80:localhost:5173 nokey@localhost.run
-  ```
-  Buka link HTTPS yang diberikan di terminal tersebut pada browser Google Chrome HP Anda.
-
-* **Opsi B: Menggunakan Localtunnel**
-  Jalankan perintah ini di terminal baru Anda:
-  ```bash
-  npx localtunnel --port 5173
-  ```
-  Buka link `.loca.lt` HTTPS yang muncul.
+Browser membatasi akses kamera (`getUserMedia`) hanya pada **Secure Context (HTTPS)**. Untuk menguji pada HP, gunakan tunneling aman:
+```bash
+ssh -o StrictHostKeyChecking=no -R 80:localhost:5173 nokey@localhost.run
+```
+Buka link HTTPS yang diberikan oleh terminal di browser Google Chrome ponsel Anda.
 
 ---
 
 ## 📖 Cara Penggunaan & Pengujian
 
-1. Buka aplikasi di HP melalui link HTTPS di atas.
-2. Izinkan akses **Kamera** dan **Mikrofon** saat diminta browser.
-3. Arahkan kamera HP ke gambar marker huruf Hijaiyah (misalnya marker **Alif**).
-4. Model 3D huruf Alif (atau huruf lainnya) yang **penuh warna, mengilap, melayang, dan bergoyang secara 3D** akan muncul di atas marker, disertai suara pelafalan huruf tersebut.
-5. Pindahkan marker/kamera Anda. Model 3D huruf tersebut akan tetap membeku di posisi terakhir (Persisten).
-6. Susun huruf-huruf tersebut secara berturut-turut dari **kanan-ke-kiri** untuk membentuk kosakata Arab (lihat daftar kata di bawah).
-7. Setelah kata terbentuk secara valid:
-   - Sistem akan memicu animasi sukses dan suara pelafalan kata utuh akan berbunyi.
-   - **Objek 3D representasi benda** (atau Bintang Emas 3D sebagai fallback sementara) akan muncul mengambang dan berputar secara dinamis di atas kumpulan huruf 3D tersebut!
-8. Ucapkan pelafalan kata/huruf ke mikrofon untuk mengevaluasi kelancaran lafal Anda secara interaktif.
+1. Buka aplikasi di HP melalui link HTTPS.
+2. Izinkan akses **Kamera** saat diminta browser.
+3. Arahkan kamera HP ke gambar marker huruf Hijaiyah (misalnya marker **Ba**).
+4. Tiga objek 3D (Huruf Ba, Model Pintu, dan Bintang Emas) akan langsung muncul secara berdampingan.
+5. **Sentuh & Geser**: Gunakan satu jari untuk menggeser objek di atas permukaan kartu.
+6. **Perbesar & Perkecil**: Cubit objek dengan dua jari untuk mengubah ukurannya.
+7. **Ketuk untuk Bersuara**: Ketuk huruf untuk mendengar pelafalan huruf, ketuk benda untuk pelafalan kata, dan ketuk bintang untuk mendengar suara chime.
 
 ---
 
-## 📋 Daftar Kosakata yang Didukung (23 Kata)
+## 📋 Daftar Kosakata & Model Benda yang Didukung
 
-Aplikasi mendukung pendeteksian otomatis dan penyusunan 23 kosakata berikut:
+Aplikasi mendukung pemuatan otomatis untuk kosakata berikut:
 
-### 🟩 Tingkat 1 (2 Huruf)
-* **يد** (ي - د) ➔ **Tangan**
-* **أب** (ا - ب) ➔ **Ayah**
-* **أم** (ا - م) ➔ **Ibu**
-* **عم** (ع - m) ➔ **Paman**
-* **أخ** (ا - خ) ➔ **Saudara**
-* **دم** (د - م) ➔ **Darah**
-
-### 🟨 Tingkat 2 (3 Huruf)
-* **باب** (ب - ا - ب) ➔ **Pintu**
-* **كتب** (ك - ت - ب) ➔ **Buku**
-* **قلم** (ق - ل - م) ➔ **Pena**
-* **نور** (ن - و - ر) ➔ **Cahaya**
-* **بيت** (ب - ي - ت) ➔ **Rumah**
-* **عسل** (ع - س - ل) ➔ **Madu**
-* **سمك** (س - م - ك) ➔ **Ikan**
-* **قmr** (ق - م - ر) ➔ **Bulan**
-* **شمس** (ش - م - س) ➔ **Matahari**
-* **رجل** (ر - ج - ل) ➔ **Kaki**
-* **ولد** (و - ل - د) ➔ **Anak Laki-Laki**
-* **بنت** (ب - ن - ت) ➔ **Anak Perempuan**
-* **عين** (ع - ي - n) ➔ **Mata**
-
-### 🟥 Tingkat 3 (4 Huruf)
-* **فرس** (ف - ر - س) ➔ **Kuda**
-* **نهر** (ن - ه - ر) ➔ **Sungai**
-* **كلب** (ك - ل - ب) ➔ **Anjing**
-* **جبل** (ج - ب - ل) ➔ **Gunung**
-* **أرنب** (ا - ر - n - ب) ➔ **Kelinci**
-* **مسجد** (م - س - ج - د) ➔ **Masjid**
-* **تفاح** (ت - ف - ا - ح) ➔ **Apel**
-* **حليب** (ح - ل - ي - ب) ➔ **Susu**
-
-----
-
-## 📦 Mengimpor Model 3D Kustom untuk Benda
-
-Jika Anda ingin mengganti Bintang Emas 3D bawaan dengan model 3D benda asli (misalnya Pena, Rumah, atau Buku):
-1. Siapkan file 3D dalam format **`.glb`** bergaya kartun/mainan.
-2. Beri nama file sesuai dengan daftar registri kata (misal: `qalam.glb` untuk pena, `bait.glb` untuk rumah, `kitab.glb` untuk buku).
-3. Salin file tersebut ke dalam folder:  
-   📂 **`/public/assets/models/words/`**
-4. Aplikasi akan mendeteksinya secara otomatis saat kata tersebut berhasil disusun di AR canvas dan menampilkan model 3D benda kustom Anda tanpa perlu mengubah kode!
+* **أب** (Ayah) ➔ `ab.glb` / `ab.mp3`
+* **أم** (Ibu) ➔ `um.glb` / `um.mp3`
+* **عم** (Paman) ➔ `am.glb` / `am.mp3`
+* **أخ** (Saudara) ➔ `akh.glb` / `akh.mp3`
+* **دم** (Darah) ➔ `dam.glb` / `dam.mp3`
+* **يد** (Tangan) ➔ `yad.glb` / `yad.mp3`
+* **باب** (Pintu) ➔ `bab.glb` / `bab.mp3`
+* **كتب** (Buku) ➔ `kitab.glb` / `kitab.mp3`
+* **قلم** (Pena) ➔ `qalam.glb` / `qalam.mp3`
+* **نor** (Cahaya) ➔ `nur.glb` / `nur.mp3`
+* **بيت** (Rumah) ➔ `bait.glb` / `bait.mp3`
+* **عسل** (Madu) ➔ `asal.glb` / `asal.mp3`
+* **سمك** (Ikan) ➔ `samak.glb` / `samak.mp3`
+* **قمر** (Bulan) ➔ `qamar.glb` / `qamar.mp3`
+* **شمس** (Matahari) ➔ `syams.glb` / `syams.mp3`
+* **رجل** (Kaki) ➔ `rijl.glb` / `rijl.mp3`
+* **ولد** (Anak Laki-Laki) ➔ `walad.glb` / `walad.mp3`
+* **بنت** (Anak Perempuan) ➔ `bint.glb` / `bint.mp3`
+* **عين** (Mata) ➔ `ain.glb` / `ain.mp3`
+* **فرس** (Kuda) ➔ `faras.glb` / `faras.mp3`
+* **نهر** (Sungai) ➔ `nahr.glb` / `nahr.mp3`
+* **كلb** (Anjing) ➔ `kalb.glb` / `kalb.mp3`
+* **جبل** (Gunung) ➔ `jabal.glb` / `jabal.mp3`
+* **أرنب** (Kelinci) ➔ `arnab.glb` / `arnab.mp3`
+* **مسجد** (Masjid) ➔ `masjid.glb` / `masjid.mp3`
+* **تفاح** (Apel) ➔ `tuffah.glb` / `tuffah.mp3`
+* **حليب** (Susu) ➔ `halib.glb` / `halib.mp3`
 
 ---
 
 ## 📄 Lisensi
 
 Proyek ini didistribusikan di bawah **Lisensi MIT**. Lihat file `LICENSE` untuk informasi lebih lanjut.
-
