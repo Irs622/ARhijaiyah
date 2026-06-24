@@ -98,6 +98,10 @@ export class AREngine {
     return this.renderer;
   }
 
+  getCamera(): THREE.Camera {
+    return this.mindar.camera;
+  }
+
   /** Expose MindAR anchors for MarkerManager to attach callbacks */
   getAnchors(): MindAnchor[] {
     return this.mindar.anchors ?? [];

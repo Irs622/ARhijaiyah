@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import type { HijaiyahLetter } from '../data/types';
 
-export type AnimationState = 'idle' | 'entrance' | 'success' | 'persistent';
+export type AnimationState = 'idle' | 'entrance' | 'success' | 'persistent' | 'interactive';
 
 export class HijaiyahObject {
   readonly letter: HijaiyahLetter;
@@ -64,8 +64,8 @@ export class HijaiyahObject {
   update(delta: number): void {
     this.mixer?.update(delta);
 
-    // Dynamic floating and swaying for active/live AR markers
-    if (this.currentState !== 'persistent') {
+    // Dynamic floating and swaying for active/live AR markers (disabled for persistent and interactive states)
+    if (this.currentState !== 'persistent' && this.currentState !== 'interactive') {
       this.elapsed += delta;
 
       // Bobbing (floating) up and down along the Z-axis (pointing out of the card)
@@ -74,6 +74,13 @@ export class HijaiyahObject {
       // Swaying left and right to reveal side-shading profiles
       this.root.rotation.y = this.baseRotation.y + Math.sin(this.elapsed * 1.5) * 0.1;
     }
+  }
+
+  /** Set straight pose for live interactive state */
+  setInteractiveState(): void {
+    this.currentState = 'interactive';
+    this.root.position.copy(this.basePosition);
+    this.root.rotation.set(0, 0, 0); // perfectly straight, no tilt/sway
   }
 
   /** Keep original shiny material and reset pose for static persistent rendering */

@@ -86,6 +86,36 @@ export class AudioManager {
     logger.debug(`[AudioManager] Playing ${filename}`);
   }
 
+  /**
+   * Plays a beautiful ascending synthesized chime (E5 -> G5 -> C6) for success feedback.
+   */
+  playSuccessChime(): void {
+    if (!this.context) return;
+    this.unlock();
+    
+    const now = this.context.currentTime;
+    const notes = [659.25, 783.99, 1046.50]; // E5, G5, C6 frequencies
+    
+    notes.forEach((freq, idx) => {
+      const osc = this.context.createOscillator();
+      const gain = this.context.createGain();
+      
+      osc.type = 'triangle'; // Soft toy-like chime sound
+      osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+      
+      gain.gain.setValueAtTime(0, now + idx * 0.08);
+      gain.gain.linearRampToValueAtTime(0.25, now + idx * 0.08 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.5);
+      
+      osc.connect(gain);
+      gain.connect(this.gainNode);
+      
+      osc.start(now + idx * 0.08);
+      osc.stop(now + idx * 0.08 + 0.6);
+    });
+    logger.debug('[AudioManager] Played success chime');
+  }
+
   setMasterVolume(value: number): void {
     if (this.gainNode) this.gainNode.gain.value = Math.max(0, Math.min(1, value));
   }
