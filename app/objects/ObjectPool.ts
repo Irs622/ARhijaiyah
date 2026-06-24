@@ -95,9 +95,9 @@ export class ObjectPool {
           // Elevate slightly along Z (facing camera) so it hovers above the card
           gltfScene.position.z += 0.05;
 
-          // Apply initial tilt (X/Y rotation) to show 3D side depth
-          gltfScene.rotation.x = 0.2;
-          gltfScene.rotation.y = 0.4;
+          // Apply initial tilt (X/Y rotation) to show 3D side depth (standing upright)
+          gltfScene.rotation.x = Math.PI / 2;
+          gltfScene.rotation.y = 0;
 
           const obj = new HijaiyahObject(
             letter,

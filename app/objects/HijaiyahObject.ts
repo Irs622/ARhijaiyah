@@ -80,7 +80,7 @@ export class HijaiyahObject {
   setInteractiveState(): void {
     this.currentState = 'interactive';
     this.root.position.copy(this.basePosition);
-    this.root.rotation.set(0, 0, 0); // perfectly straight, no tilt/sway
+    this.root.rotation.set(Math.PI / 2, 0, 0); // Stand upright perpendicular to card
   }
 
   /** Keep original shiny material and reset pose for static persistent rendering */

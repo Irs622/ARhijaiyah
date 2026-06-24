@@ -101,7 +101,7 @@ async function bootstrap(): Promise<void> {
     if (hijaiyahObj) {
       hijaiyahObj.setInteractiveState();
       hijaiyahObj.root.position.set(-0.35, 0, 0.05);
-      hijaiyahObj.root.rotation.set(0, 0, 0); // straight rotation
+      hijaiyahObj.root.rotation.set(Math.PI / 2, 0, 0); // Stand upright perpendicular to card
       
       hijaiyahObj.root.userData = { type: 'letter', audioFile: letter.audioFile };
       
@@ -141,7 +141,7 @@ async function bootstrap(): Promise<void> {
 
           // Position at X = 0.0 (center), Y = 0, Z = 0.05
           wordRoot.position.set(0, 0, 0.05);
-          wordRoot.rotation.set(0, 0, 0); // straight rotation
+          wordRoot.rotation.set(Math.PI / 2, 0, 0); // Stand upright perpendicular to card
 
           // Setup materials & shadows
           wordRoot.traverse((child) => {
@@ -171,7 +171,7 @@ async function bootstrap(): Promise<void> {
     // 4. Spawn Object 3: Gold Star (Procedural)
     const starMesh = create3DStar(0xFFD700);
     starMesh.position.set(0.35, 0, 0.05);
-    starMesh.rotation.set(0, 0, 0); // straight rotation
+    starMesh.rotation.set(Math.PI / 2, 0, 0); // Stand upright perpendicular to card
     starMesh.scale.set(0.4, 0.4, 0.4);
     starMesh.userData = { type: 'star' };
 
