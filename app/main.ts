@@ -26,10 +26,10 @@ import { isWebGL2Supported }    from './utils/device.utils';
 import { logger }               from './utils/logger';
 import type { MarkerFoundPayload } from './tracking/TrackingEvents';
 
+import { MarkerAnchor }         from './tracking/MarkerAnchor';
+import type { TargetWord }      from './data/words.data';
 import { ARInteractionManager } from './core/ARInteractionManager';
 import { GLTFLoader }           from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { create3DStar }         from './objects/PlaceholderObjects';
-import { getAssociatedWordForLetter } from './data/words.data';
 import * as THREE               from 'three';
 
 async function bootstrap(): Promise<void> {
@@ -75,6 +75,9 @@ async function bootstrap(): Promise<void> {
 
   const gltfLoader = new GLTFLoader();
 
+  let lastActiveAnchor: MarkerAnchor | null = null;
+  let isWordComposed = false;
+
   // ── 3. Preload assets ─────────────────────────────────────
   logger.info('[main] Preloading assets…');
   await Promise.all([
@@ -88,6 +91,11 @@ async function bootstrap(): Promise<void> {
 
   // ── 5. Core event wiring ──────────────────────────────────
   eventBus.on<MarkerFoundPayload>('marker:found', ({ anchor, letter }) => {
+    // If a word was already composed, trigger auto-reset before scanning the new letter
+    if (isWordComposed) {
+      wordComposer.reset();
+    }
+
     // 1. Clean up any existing children from the anchor group and unregister them
     anchor.group.children.forEach((child) => {
       arInteractionManager.unregisterObject(child);
@@ -96,11 +104,14 @@ async function bootstrap(): Promise<void> {
       anchor.group.remove(anchor.group.children[0]);
     }
 
+    // Track the last active anchor
+    lastActiveAnchor = anchor;
+
     // 2. Spawn Object 1: Letter Model (Leased from preloaded pool)
     const hijaiyahObj = objectPool.lease(letter);
     if (hijaiyahObj) {
       hijaiyahObj.setInteractiveState();
-      hijaiyahObj.root.position.set(-0.35, 0, 0.05);
+      hijaiyahObj.root.position.set(0, 0, 0.05); // Centered on marker
       hijaiyahObj.root.rotation.set(Math.PI / 2, 0, 0); // Stand upright perpendicular to card
       
       hijaiyahObj.root.userData = { type: 'letter', audioFile: letter.audioFile };
@@ -112,14 +123,34 @@ async function bootstrap(): Promise<void> {
       animController.register(hijaiyahObj);
     }
 
-    // 3. Spawn Object 2: Word Model (Loaded dynamically if exists)
-    const word = getAssociatedWordForLetter(letter.arabic);
-    if (word && word.modelFile) {
+    // 3. Accumulate letter
+    wordComposer.accumulate(letter);
+  });
+
+  // Handle word composition success to hide letters and spawn word model
+  eventBus.on<TargetWord>('word:composed', (word) => {
+    isWordComposed = true;
+
+    // Hide all letter models on all visible markers
+    markerManager.getVisibleAnchors().forEach((anchor) => {
+      anchor.group.children.forEach((child) => {
+        if (child.userData && child.userData.type === 'letter') {
+          child.visible = false;
+        }
+      });
+    });
+
+    if (!lastActiveAnchor || !lastActiveAnchor.isVisible) return;
+
+    // Spawn Object 2: Word Model (Loaded dynamically if exists)
+    if (word.modelFile) {
       gltfLoader.load(
         `/assets/models/words/${word.modelFile}`,
         (gltf) => {
           // Double check if anchor is still tracked
-          if (!anchor.isVisible) return;
+          if (!lastActiveAnchor || !lastActiveAnchor.isVisible) return;
+          // If a reset happened while loading, discard
+          if (!isWordComposed) return;
 
           const wordRoot = gltf.scene;
 
@@ -157,9 +188,9 @@ async function bootstrap(): Promise<void> {
 
           wordRoot.userData = { type: 'word', audioFile: word.audioFile };
           
-          anchor.group.add(wordRoot);
+          lastActiveAnchor.group.add(wordRoot);
           arInteractionManager.registerObject(wordRoot);
-          logger.info(`[main] Spawned word model ${word.modelFile} for letter ${letter.name}`);
+          logger.info(`[main] Spawned word model ${word.modelFile} for composed word ${word.arabic}`);
         },
         undefined,
         (err) => {
@@ -167,19 +198,29 @@ async function bootstrap(): Promise<void> {
         }
       );
     }
+  });
 
-    // 4. Spawn Object 3: Gold Star (Procedural)
-    const starMesh = create3DStar(0xFFD700);
-    starMesh.position.set(0.35, 0, 0.05);
-    starMesh.rotation.set(Math.PI / 2, 0, 0); // Stand upright perpendicular to card
-    starMesh.scale.set(0.4, 0.4, 0.4);
-    starMesh.userData = { type: 'star' };
+  // Handle word reset (Ulangi button or auto-reset)
+  eventBus.on('word:reset', () => {
+    isWordComposed = false;
 
-    anchor.group.add(starMesh);
-    arInteractionManager.registerObject(starMesh);
+    // Clean up word models and make all letter models visible & centered again
+    markerManager.getVisibleAnchors().forEach((anchor) => {
+      const toRemove: THREE.Object3D[] = [];
+      anchor.group.children.forEach((child) => {
+        if (child.userData && child.userData.type === 'word') {
+          toRemove.push(child);
+        } else if (child.userData && child.userData.type === 'letter') {
+          child.visible = true;
+          child.position.set(0, 0, 0.05); // Recenter letter model
+        }
+      });
 
-    // 5. Update bottom HUD strip
-    wordComposer.accumulate(letter);
+      toRemove.forEach((child) => {
+        arInteractionManager.unregisterObject(child);
+        anchor.group.remove(child);
+      });
+    });
   });
 
   // Handle marker lost event to clean up and unregister objects

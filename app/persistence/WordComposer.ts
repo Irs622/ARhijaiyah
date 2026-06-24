@@ -12,9 +12,9 @@ export class WordComposer {
 
   /** Called each time a new letter is added to PersistentCanvas */
   accumulate(letter: HijaiyahLetter): void {
-    // Prevent same letter appearing twice in a word
-    if (this.sequence.some((l) => l.id === letter.id)) {
-      logger.debug(`[WordComposer] Duplicate letter ${letter.name}, skipped`);
+    // Prevent consecutive identical letters (to filter out marker jitter)
+    if (this.sequence.length > 0 && this.sequence[this.sequence.length - 1].id === letter.id) {
+      logger.debug(`[WordComposer] Consecutive duplicate letter ${letter.name}, skipped`);
       return;
     }
 
